@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiImport Perú S.A.C. - Optimización de Pipeline con IA & NLP</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#0f172a'
+            },
+            fuga: '#ef4444'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulseAlert {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      50% { transform: scale(1.02); box-shadow: 0 0 22px 6px rgba(239, 68, 68, 0.45); }
+    }
+    .pulse-fuga {
+      animation: pulseAlert 2.2s infinite;
+    }
+    .slide {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.35s ease-in-out;
+    }
+    .slide.active {
+      display: block;
+      opacity: 1;
+    }
+    /* Estilización del scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- ================= TOPBAR CON RÚBRICA Y TIEMPO ================= -->
+  <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+      <!-- Identidad Corporativa / Curso -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-900/40">
+          <i class="fa-solid fa-ship text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-base text-white tracking-tight">LogiImport Perú S.A.C.</span>
+            <span class="hidden md:inline px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/30">ADEX · EC2</span>
+          </div>
+          <span class="text-xs block text-slate-400">IA Aplicada a Negocios · Automatización de Pipeline Comercial</span>
+        </div>
+      </div>
+      
+      <!-- Navegación entre Módulos / Rúbrica ADEX -->
+      <nav class="hidden lg:flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+        <button onclick="goToSlide(0)" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg transition-all active-nav bg-blue-600 text-white" id="nav-btn-0">
+          <i class="fa-solid fa-triangle-exclamation mr-1 text-red-400"></i>1. Diagnóstico & Fuga
+        </button>
+        <button onclick="goToSlide(1)" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all" id="nav-btn-1">
+          <i class="fa-solid fa-brain mr-1 text-purple-400"></i>2. NLP & Detección Conducta
+        </button>
+        <button onclick="goToSlide(2)" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all" id="nav-btn-2">
+          <i class="fa-solid fa-terminal mr-1 text-indigo-400"></i>3. Prompts & Métodos
+        </button>
+        <button onclick="goToSlide(3)" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all" id="nav-btn-3">
+          <i class="fa-solid fa-sliders mr-1 text-emerald-400"></i>4. Simulador Financiero
+        </button>
+        <button onclick="goToSlide(4)" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all" id="nav-btn-4">
+          <i class="fa-solid fa-chart-line mr-1 text-cyan-400"></i>5. Fase 3: Analítica IA
+        </button>
+      </nav>
+
+      <!-- Temporizador 15 Minutos Rúbrica ADEX -->
+      <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
+        <i class="fa-regular fa-clock text-amber-400 text-xs"></i>
+        <span id="timerDisplay" class="font-mono text-xs font-bold text-slate-200">15:00</span>
+        <button onclick="toggleTimer()" id="timerControlBtn" class="text-[10px] text-slate-400 hover:text-white px-1">
+          <i class="fa-solid fa-play"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= CONTENEDOR PRINCIPAL ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
+
+    <!-- ========================================================
+         SLIDE 1: DIAGNÓSTICO Y EMBEDDING DEL EMBUDO (CRITERIO 1 - IND 3)
+         ======================================================== -->
+    <section id="slide-0" class="slide active">
+      <!-- Encabezado con medalla de rúbrica -->
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-2">
+            <i class="fa-solid fa-award"></i> Rúbrica Criterio 1: Propuesta de Automatización Empresarial (Indicador de Logro 3)
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Diagnóstico Operativo y Ruptura del Pipeline de Ventas
+          </h2>
+        </div>
+        <div class="text-right">
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">Meta: Nivel Sobresaliente (4 pts)</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Visualización del Embudo de Ventas con Punto de Ruptura Exacto -->
+        <div class="lg:col-span-7 bg-slate-900/80 p-6 rounded-2xl border border-slate-800 shadow-2xl flex flex-col gap-3">
+          <div class="flex justify-between items-center mb-1">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <i class="fa-solid fa-filter text-blue-400"></i> Embudo Mensual Actual de LogiImport Perú
+            </h3>
+            <span class="text-xs font-mono font-bold text-amber-400">Conversión Global: Solo 12%</span>
+          </div>
+
+          <!-- Etapa 1: Consultas recibidas -->
+          <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/80 flex items-center justify-between hover:border-slate-600 transition-all">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs">01</span>
+              <div>
+                <p class="font-bold text-white text-sm">Consultas Totales Recibidas</p>
+                <p class="text-xs text-slate-400">Pymes importadoras interesadas en fletes marítimos/aéreos y aduanas</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xl font-mono font-black text-blue-400">100</span>
+              <span class="text-[11px] block text-slate-400">100% Leads</span>
+            </div>
+          </div>
+
+          <!-- Caída intermedia -->
+          <div class="flex items-center justify-center gap-2 text-xs text-amber-400/90 py-0.5">
+            <i class="fa-solid fa-arrow-down text-slate-600"></i>
+            <span class="font-medium bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">Fuga 1: -40 consultas sin cotizar por lentitud de respuesta</span>
+          </div>
+
+          <!-- Etapa 2: Cotizaciones enviadas -->
+          <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/80 flex items-center justify-between hover:border-slate-600 transition-all">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">02</span>
+              <div>
+                <p class="font-bold text-white text-sm">Cotizaciones Formales Emitidas</p>
+                <p class="text-xs text-slate-400">Propuestas económicas enviadas por los 5 ejecutivos</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xl font-mono font-black text-indigo-400">60</span>
+              <span class="text-[11px] block text-slate-400">60% de leads</span>
+            </div>
+          </div>
+
+          <!-- PUNTO CRÍTICO RESALTADO: RUPTURA POR DESIDIA OPERATIVA -->
+          <div class="pulse-fuga bg-red-950/70 p-4 rounded-xl border-2 border-red-500 my-1 relative overflow-hidden shadow-xl shadow-red-950/60">
+            <div class="flex items-center justify-between mb-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-black bg-red-600 text-white uppercase tracking-wider">
+                <i class="fa-solid fa-bolt-lightning"></i> Ruptura Crítica del Pipeline (Día 3 a 15)
+              </span>
+              <span class="text-xs font-mono font-bold text-red-300">¡EL 70% NUNCA ES RECONTACTADO!</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-3 pt-2.5 border-t border-red-900/60">
+              <div class="bg-red-900/40 p-3 rounded-lg border border-red-700/60">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs text-red-300 font-bold">❌ Sin Seguimiento</span>
+                  <span class="text-xs bg-red-800/60 px-1.5 py-0.5 rounded font-mono text-red-200">70%</span>
+                </div>
+                <span class="text-2xl font-mono font-black text-red-200 block my-1">42 Cotizaciones</span>
+                <p class="text-[11px] text-red-300/80 leading-snug">Cierre de apenas el <strong>7% (~3 ventas)</strong>. El lead se enfría o se va con la competencia.</p>
+              </div>
+
+              <div class="bg-emerald-950/50 p-3 rounded-lg border border-emerald-600/60">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs text-emerald-300 font-bold">✅ Con Seguimiento Manual</span>
+                  <span class="text-xs bg-emerald-800/60 px-1.5 py-0.5 rounded font-mono text-emerald-200">30%</span>
+                </div>
+                <span class="text-2xl font-mono font-black text-emerald-300 block my-1">18 Cotizaciones</span>
+                <p class="text-[11px] text-emerald-300/80 leading-snug">Cierre del <strong>50% (9 ventas)</strong>. El contacto multiplica por 7x la probabilidad de cierre.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Etapa 3: Cierre Total Actual -->
+          <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/80 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">03</span>
+              <div>
+                <p class="font-bold text-white text-sm">Embarques Confirmados (Línea Base Actual)</p>
+                <p class="text-xs text-slate-400">9 (con seguimiento) + 3 (sin seguimiento)</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-2xl font-mono font-black text-emerald-400">12</span>
+              <span class="text-xs block text-slate-400">US$ 18,000 / mes facturado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel de Impacto Organizacional y Competitividad (Rúbrica) -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+          <div class="bg-slate-900/90 p-5 rounded-2xl border border-slate-800">
+            <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-magnifying-glass text-blue-400"></i> Causas Raíz y Pérdida de Competitividad
+            </h4>
+            <div class="space-y-2.5 text-xs text-slate-300">
+              <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                <strong class="text-white block mb-0.5">1. Ausencia de Protocolo Estandarizado:</strong>
+                No hay calendario post-envío de tarifa. Cada ejecutivo decide empíricamente cuándo insistir o abandonar.
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                <strong class="text-white block mb-0.5">2. Operación por Memoria sin CRM:</strong>
+                5 ejecutivos saturados atienden por WhatsApp y correo individual sin visibilidad de cartera.
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                <strong class="text-white block mb-0.5">3. Cero Registro Sistemático de Objeciones:</strong>
+                La gerencia desconoce si se pierde por tarifa, tiempo de tránsito o lentitud de respuesta.
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta de Costo Financiero -->
+          <div class="bg-gradient-to-br from-red-950/60 via-slate-900 to-slate-900 p-5 rounded-2xl border border-red-500/40">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-bold text-red-400 uppercase tracking-wider">Cálculo de la Fuga Financiera</span>
+              <span class="text-[10px] bg-red-900/40 text-red-300 px-2 py-0.5 rounded font-mono">Pérdida Directa</span>
+            </div>
+            <div class="flex items-baseline gap-2 my-2">
+              <span class="text-3xl font-extrabold text-white font-mono">-US$ 13,500</span>
+              <span class="text-xs text-slate-400">/ mes</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Con un supuesto prudente de seguimiento sistemático del 35% de conversión sobre las 60 cotizaciones, LogiImport cerraría <strong>21 embarques (US$ 31,500)</strong>, dejando de perder <strong>$162,000 USD anuales</strong>.
+            </p>
+          </div>
+
+          <button onclick="goToSlide(1)" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-900/30">
+            <span>Siguiente: Detección Conductual y Fugas con NLP</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SLIDE 2: IA NLP Y DETECCIÓN CONDUCTUAL DE CLIENTES (CLAVE SOLICITADA)
+         ======================================================== -->
+    <section id="slide-1" class="slide">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 mb-2">
+            <i class="fa-solid fa-microchip"></i> Tecnología Clave: IA con NLP (Procesamiento de Lenguaje Natural)
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Análisis de Conducta del Cliente y Anticipación de Rupturas
+          </h2>
+        </div>
+        <div class="text-right">
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 text-purple-300 border border-purple-500/30">Diagnóstico Semántico en Tiempo Real</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Cómo opera el motor NLP en LogiImport -->
+        <div class="lg:col-span-7 bg-slate-900/80 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-network-wired text-purple-400"></i> ¿Cómo Analiza el NLP los Mensajes de Correo y WhatsApp?
+            </h3>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+              Los clientes no siempre dicen "no". Manifiestan comportamientos, silencios, dudas tarifarias o comparativas con competidores que los ejecutivos pasan por alto. El modelo de NLP analiza cada interacción para clasificar la <strong>intención y probabilidad de ruptura</strong>:
+            </p>
+
+            <!-- Ejemplos prácticos de clasificación NLP -->
+            <div class="space-y-3 font-mono text-xs">
+              <!-- Caso 1 -->
+              <div class="p-3 bg-slate-950/80 rounded-xl border border-emerald-500/30">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Alta Intención de Compra (Score: 88/100)</span>
+                  <span class="text-[10px] bg-emerald-500/10 text-emerald-300 px-2 py-0.5 rounded">Ruptura: Mínima</span>
+                </div>
+                <p class="text-slate-300 italic text-[11px]">"Hola, ¿cuándo zarpa la motonave en Callao y qué documentos necesita el agente de aduanas?"</p>
+                <div class="mt-1 text-[10px] text-slate-400 font-sans">
+                  <strong>Acción IA:</strong> Alerta inmediata al ejecutivo para enviar contrato de flete y confirmar booking en &lt;1 hora.
+                </div>
+              </div>
+
+              <!-- Caso 2 -->
+              <div class="p-3 bg-slate-950/80 rounded-xl border border-amber-500/30">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-amber-400 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Objeción de Precio / Comparativa (Score: 55/100)</span>
+                  <span class="text-[10px] bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded">Ruptura: Media (Día 4)</span>
+                </div>
+                <p class="text-slate-300 italic text-[11px]">"Me parece un poco elevado el flete respecto a otra cotización que tengo de otro forwarder."</p>
+                <div class="mt-1 text-[10px] text-slate-400 font-sans">
+                  <strong>Acción IA:</strong> Redacción de argumento valor: desglose de días libres de sobreestadía y seguridad de espacio en naviera.
+                </div>
+              </div>
+
+              <!-- Caso 3 -->
+              <div class="p-3 bg-slate-950/80 rounded-xl border border-red-500/30">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark"></i> Ruptura Inminente por Silencio / Frío (Score: 18/100)</span>
+                  <span class="text-[10px] bg-red-500/10 text-red-300 px-2 py-0.5 rounded">Ruptura: 82%</span>
+                </div>
+                <p class="text-slate-300 italic text-[11px]">Cliente abrió la cotización 3 veces en 48 horas pero no respondió al correo ni WhatsApp.</p>
+                <div class="mt-1 text-[10px] text-slate-400 font-sans">
+                  <strong>Acción IA:</strong> Disparo de cadencia automatizada D-5: mensaje de reenganche con oferta de consolidado LCL alternativo.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>Procesamiento de Sentimiento y Detección de Fugas</span>
+            <span class="text-purple-400 font-bold"><i class="fa-solid fa-shield-halved"></i> Blindaje del Pipeline</span>
+          </div>
+        </div>
+
+        <!-- Arquitectura del Motor NLP -->
+        <div class="lg:col-span-5 flex flex-col justify-between gap-4">
+          <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-800">
+            <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-diagram-project text-purple-400"></i> Variables Conductuales Monitoreadas
+            </h4>
+            <div class="space-y-3 text-xs">
+              <div class="flex items-start gap-3">
+                <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 text-xs">
+                  <i class="fa-solid fa-stopwatch"></i>
+                </div>
+                <div>
+                  <strong class="text-white">Latencia de Respuesta del Cliente:</strong>
+                  <p class="text-slate-400 text-[11px]">Si el cliente pasa de responder en 2 horas a tardar 48 horas, el NLP reduce el score y activa alerta de posible fuga.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 text-xs">
+                  <i class="fa-solid fa-comment-dots"></i>
+                </div>
+                <div>
+                  <strong class="text-white">Sentimiento y Tono de la Consulta:</strong>
+                  <p class="text-slate-400 text-[11px]">Distingue entre dudas operativas (interés genuino), regateo tarifario (interés sensible a precio) o evasivas.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 text-xs">
+                  <i class="fa-solid fa-eye"></i>
+                </div>
+                <div>
+                  <strong class="text-white">Interacciones con la Propuesta PDF:</strong>
+                  <p class="text-slate-400 text-[11px]">Tracking de aperturas, reenvíos dentro de la empresa y clics en términos tarifarios.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+            <span class="text-xs font-bold text-slate-300 uppercase block mb-1">Beneficio Clave para LogiImport</span>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              El equipo de ventas deja de adivinar qué cliente atender. La IA les entrega un <strong>tablero diario priorizado</strong> que detecta a tiempo al cliente que está a punto de fugarse a la competencia.
+            </p>
+          </div>
+
+          <button onclick="goToSlide(2)" class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-900/30">
+            <span>Ver Ingeniería de Prompts & Métodos (Fase 2)</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SLIDE 3: PROMPTS EVIDENCIADOS Y MÉTODOS (CRITERIO 2 - IND 2)
+         ======================================================== -->
+    <section id="slide-2" class="slide">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-2">
+            <i class="fa-solid fa-code"></i> Rúbrica Criterio 2: Calidad e Ingeniería de Prompts (Indicador de Logro 2)
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Diseño e Implementación de Prompts Avanzados
+          </h2>
+        </div>
+        <div class="text-right">
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 text-emerald-400 border border-emerald-500/30">Nivel Sobresaliente: Rol, Contexto y Restricciones</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Prompts Evidenciados con Pestañas -->
+        <div class="lg:col-span-6 bg-slate-900/90 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
+              <div class="flex items-center gap-2">
+                <button onclick="switchPromptTab('diagnostico')" id="tab-btn-diag" class="px-3 py-1 text-xs font-bold rounded-lg bg-indigo-600 text-white transition-all">
+                  Prompt 1: Diagnóstico Fuga
+                </button>
+                <button onclick="switchPromptTab('nlp')" id="tab-btn-nlp" class="px-3 py-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">
+                  Prompt 2: Lead Scoring NLP
+                </button>
+              </div>
+              <button onclick="copyCurrentPrompt()" class="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">
+                <i class="fa-regular fa-copy"></i> Copiar Prompt
+              </button>
+            </div>
+
+            <!-- Contenido Prompt 1 -->
+            <div id="promptContent1" class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto min-h-[220px]">
+<span class="text-indigo-400 font-bold">// EVIDENCIA PROMPT 1: MODELO CLAUDE 3.5 SONNET / CHATGPT-4o</span>
+<span class="text-purple-400 font-semibold">[ROL & EXPERTICIA]:</span>
+"Actúa como consultor comercial experto en agencias de carga internacional y logística de importaciones.
+
+<span class="text-blue-400 font-semibold">[CONTEXTO Y VARIABLES CUANTITATIVAS]:</span>
+LogiImport Perú S.A.C. recibe 100 consultas al mes, envía 60 cotizaciones y cierra 12 (conversión del 20%). El 70% de las cotizaciones (42) no recibe seguimiento formal: con seguimiento se cierra el 50%, sin seguimiento solo el 7%. Ingreso promedio por embarque: US$ 1,500. El equipo comercial tiene 5 ejecutivos, usa correo y WhatsApp, y carece de CRM.
+
+<span class="text-emerald-400 font-semibold">[TAREA & RESTRICCIONES]:</span>
+Diagnostica la fuga del pipeline entre cotización y confirmación de embarque. Diseña un sistema de seguimiento asistido por IA que priorice cotizaciones mediante lead scoring, prediga probabilidad de cierre y proporcione retroalimentación analítica al equipo. Máximo 250 palabras."
+            </div>
+
+            <!-- Contenido Prompt 2 -->
+            <div id="promptContent2" class="hidden bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto min-h-[220px]">
+<span class="text-indigo-400 font-bold">// EVIDENCIA PROMPT 2: CLASIFICADOR CONDUCTUAL NLP</span>
+<span class="text-purple-400 font-semibold">[ROL]:</span>
+"Actúa como motor de analítica conductual y NLP integrado al CRM de LogiImport Perú.
+
+<span class="text-blue-400 font-semibold">[CONTEXTO DE ENTRADA]:</span>
+Entrada: Historial de mensajes de WhatsApp y correos intercambiados con el importador en los últimos 7 días. Tipos de objeciones evaluadas: Tarifa flete, Días libres sobreestadía, Tiempo de tránsito, y Silencio operativo.
+
+<span class="text-emerald-400 font-semibold">[TAREA]:</span>
+1. Asigna un Score de Compra (0-100).
+2. Clasifica el riesgo de ruptura del pipeline (Bajo / Medio / Crítico).
+3. Redacta el borrador de respuesta hiperpersonalizado abordando la objeción específica para aprobación del ejecutivo con un solo clic."
+            </div>
+
+            <!-- Desglose de Rúbrica -->
+            <div class="grid grid-cols-3 gap-2 mt-3 text-[11px]">
+              <div class="bg-indigo-950/40 border border-indigo-800/40 p-2 rounded-lg text-center">
+                <span class="text-indigo-300 font-bold block">Rol Definido</span>
+                <span class="text-slate-400 text-[10px]">Consultor Logístico</span>
+              </div>
+              <div class="bg-blue-950/40 border border-blue-800/40 p-2 rounded-lg text-center">
+                <span class="text-blue-300 font-bold block">Variables Exactas</span>
+                <span class="text-slate-400 text-[10px]">100 leads, 60 cots, $1500</span>
+              </div>
+              <div class="bg-emerald-950/40 border border-emerald-800/40 p-2 rounded-lg text-center">
+                <span class="text-emerald-300 font-bold block">Restricción</span>
+                <span class="text-slate-400 text-[10px]">Max 250 palabras</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-2.5 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>Cumple Rúbrica ADEX Criterio 2</span>
+            <span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Sobresaliente (4 pts)</span>
+          </div>
+        </div>
+
+        <!-- Métodos y Procesos del Sistema Propuesto -->
+        <div class="lg:col-span-6 bg-slate-900/90 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-gears text-indigo-400"></i> Métodos y Procesos a Implementar
+            </h3>
+
+            <div class="space-y-2.5 text-xs">
+              <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/60 flex items-start gap-3">
+                <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center shrink-0">1</span>
+                <div>
+                  <h4 class="font-bold text-white uppercase text-[11px] tracking-wide">Centralización en CRM Ligero (HubSpot / Pipedrive)</h4>
+                  <p class="text-slate-300 mt-0.5 text-[11px]">Conexión de WhatsApp Business API y Gmail. Cada cotización emitida se sincroniza automáticamente con monto, servicio (FCL/LCL) y fecha límite.</p>
+                </div>
+              </div>
+
+              <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/60 flex items-start gap-3">
+                <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xs flex items-center justify-center shrink-0">2</span>
+                <div>
+                  <h4 class="font-bold text-white uppercase text-[11px] tracking-wide">Algoritmo Predictivo de Priorización Matutina</h4>
+                  <p class="text-slate-300 mt-0.5 text-[11px]">A las 8:30 AM, cada ejecutivo recibe un Top 10 de cotizaciones con mayor urgencia y calor de compra según el modelo predictivo.</p>
+                </div>
+              </div>
+
+              <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/60 flex items-start gap-3">
+                <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 font-bold text-xs flex items-center justify-center shrink-0">3</span>
+                <div>
+                  <h4 class="font-bold text-white uppercase text-[11px] tracking-wide">Cadencia de Seguimiento Inteligente (D-2, D-5, D-10, D-15)</h4>
+                  <p class="text-slate-300 mt-0.5 text-[11px]">La IA redacta borradores contextuales según el servicio cotizado. El ejecutivo valida o edita con un solo clic.</p>
+                </div>
+              </div>
+
+              <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/60 flex items-start gap-3">
+                <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center justify-center shrink-0">4</span>
+                <div>
+                  <h4 class="font-bold text-white uppercase text-[11px] tracking-wide">Retroalimentación Analítica Semanal</h4>
+                  <p class="text-slate-300 mt-0.5 text-[11px]">Generación de dashboard de causas de no cierre para que la gerencia negocie mejores tarifas con navieras o reduzca tiempos de cotización.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between">
+            <span class="text-xs text-slate-400 font-mono">Meta 90 días: Seguimiento al 100%</span>
+            <button onclick="goToSlide(3)" class="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1">
+              Ir al Simulador Financiero <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SLIDE 4: SIMULADOR INTERACTIVO DE IMPACTO FINANCIERO Y ROI
+         ======================================================== -->
+    <section id="slide-3" class="slide">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-2">
+            <i class="fa-solid fa-calculator"></i> Herramienta Interactiva: Simulación de ROI y Crecimiento
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Simulador de Impacto Financiero en Tiempo Real
+          </h2>
+        </div>
+        <div class="text-right">
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 text-emerald-300 border border-emerald-500/30">Demostración en Vivo para Clase</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Controles Deslizantes -->
+        <div class="lg:col-span-5 bg-slate-900/90 p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col gap-4">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-emerald-400"></i> Ajuste de Variables Operativas
+          </h3>
+
+          <!-- Control 1 -->
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-300 mb-1">
+              <span>% Cotizaciones con Seguimiento IA</span>
+              <span id="sliderTrackingVal" class="font-mono font-bold text-emerald-400 text-sm">100%</span>
+            </div>
+            <input type="range" id="sliderTracking" min="30" max="100" value="100" step="5" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+              <span>Actual: 30%</span>
+              <span>Meta IA: 100%</span>
+            </div>
+          </div>
+
+          <!-- Control 2 -->
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-300 mb-1">
+              <span>Tasa de Conversión (con Seguimiento IA)</span>
+              <span id="sliderConvVal" class="font-mono font-bold text-blue-400 text-sm">45%</span>
+            </div>
+            <input type="range" id="sliderConv" min="20" max="60" value="45" step="1" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500">
+            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+              <span>Prudente: 35%</span>
+              <span>Histórico alto: 50%</span>
+            </div>
+          </div>
+
+          <!-- Control 3 -->
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-300 mb-1">
+              <span>Ingreso Promedio por Embarque</span>
+              <span id="sliderTicketVal" class="font-mono font-bold text-cyan-400 text-sm">US$ 1,500</span>
+            </div>
+            <input type="range" id="sliderTicket" min="1000" max="3000" value="1500" step="100" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500">
+          </div>
+
+          <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-blue-400 text-xs"></i>
+            <span>Base estandarizada del caso: <strong>60 cotizaciones emitidas al mes</strong>.</span>
+          </div>
+        </div>
+
+        <!-- Resultados Dinámicos y Gráfico Comparativo -->
+        <div class="lg:col-span-7 bg-slate-900/90 p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col gap-5">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+              <span class="text-xs text-slate-400 uppercase font-semibold">Cierres Totales Mensuales</span>
+              <div class="flex items-center justify-center gap-2 mt-1">
+                <span class="text-slate-500 text-base line-through">12</span>
+                <i class="fa-solid fa-arrow-right text-xs text-slate-600"></i>
+                <span id="simCierres" class="text-3xl font-mono font-black text-emerald-400">27</span>
+              </div>
+              <span id="simDiffCierres" class="text-xs text-emerald-400 font-bold block mt-1">+15 embarques</span>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+              <span class="text-xs text-slate-400 uppercase font-semibold">Facturación Mensual Proyectada</span>
+              <div class="flex items-center justify-center gap-2 mt-1">
+                <span class="text-slate-500 text-xs line-through">$18,000</span>
+                <i class="fa-solid fa-arrow-right text-xs text-slate-600"></i>
+                <span id="simFacturacion" class="text-2xl font-mono font-black text-cyan-400">US$ 40,500</span>
+              </div>
+              <span id="simDiffIngresos" class="text-xs text-cyan-400 font-bold block mt-1">+US$ 22,500 / mes</span>
+            </div>
+          </div>
+
+          <!-- Gráfico de Barras Dinámico -->
+          <div>
+            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Comparativa Mensual de Facturación (US$)</h4>
+            <div class="h-44">
+              <canvas id="simChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SLIDE 5: FASE 3: VISUALIZACIÓN ESTRATÉGICA CON IA (CRITERIO 3 - IND 4)
+         ======================================================== -->
+    <section id="slide-4" class="slide">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-2">
+            <i class="fa-solid fa-chart-pie"></i> Rúbrica Criterio 3: Visualización de Datos con IA (Indicador de Logro 4)
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Visualización Estratégica y Analítica Predictiva con IA
+          </h2>
+        </div>
+        <div class="text-right">
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 text-cyan-300 border border-cyan-500/30">ChatGPT ADA / Julius.ai</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Gráfico 1: Análisis Semántico de Objeciones (NLP) -->
+        <div class="lg:col-span-6 bg-slate-900/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-cyan-400"></i> Análisis Causa Raíz de Pérdida (NLP)
+              </h3>
+              <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono">Dataset: 42 Cotizaciones</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-2">
+              Categorización de motivos extraídos del texto de correos y silencios de prospectos:
+            </p>
+            <div class="h-56">
+              <canvas id="reasonsChart"></canvas>
+            </div>
+          </div>
+          <div class="mt-3 p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-xs text-slate-300">
+            <strong class="text-cyan-400">Hallazgo Estratégico:</strong> El <strong>48% de la pérdida es "Silencio Operativo"</strong> (lead frío), es decir, clientes que sí estaban interesados pero que la agencia descuidó por falta de seguimiento.
+          </div>
+        </div>
+
+        <!-- Gráfico 2: Desempeño por Servicio Logístico -->
+        <div class="lg:col-span-6 bg-slate-900/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-column text-indigo-400"></i> Recuperación por Servicio Logístico
+              </h3>
+              <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono">Línea Base vs Con IA</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-2">
+              Impacto diferencial de la automatización según el tipo de carga comercializada:
+            </p>
+            <div class="h-56">
+              <canvas id="servicesChart"></canvas>
+            </div>
+          </div>
+          <div class="mt-3 p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-xs text-slate-300">
+            <strong class="text-indigo-400">Impacto Logístico:</strong> <strong>FCL (Contenedores)</strong> y <strong>Aduanas</strong> presentan el mayor crecimiento por agilidad en cotización de fletes y asesoría oportuna.
+          </div>
+        </div>
+
+        <!-- Conclusión Ejecutiva alineada a Rúbrica -->
+        <div class="lg:col-span-12 bg-gradient-to-r from-blue-950/50 via-indigo-950/40 to-slate-900 p-5 rounded-2xl border border-blue-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl shrink-0">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-white text-sm sm:text-base">Decisión Estratégica Facilitada por la IA</h4>
+              <p class="text-xs text-slate-300 max-w-3xl leading-relaxed">
+                El análisis de datos demuestra que LogiImport Perú <strong>no necesita incrementar su presupuesto en publicidad para crecer</strong>. Al implementar CRM, Lead Scoring con IA y análisis de sentimiento con NLP, la empresa captura la demanda existente, pasando de facturar US$ 18,000 a más de US$ 31,500 mensuales con el mismo equipo operativo.
+              </p>
+            </div>
+          </div>
+          <div class="shrink-0 flex items-center gap-2">
+            <button onclick="goToSlide(0)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold transition-all border border-slate-700">
+              <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= NAVBAR INFERIOR ================= -->
+  <footer class="bg-slate-900/90 border-t border-slate-800 py-3 px-4 sm:px-8">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <button onclick="prevSlide()" id="prevBtn" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold flex items-center gap-2 transition-all opacity-50 cursor-not-allowed" disabled>
+        <i class="fa-solid fa-chevron-left"></i> Anterior
+      </button>
+
+      <!-- Indicadores de puntos -->
+      <div class="flex items-center gap-1.5">
+        <span onclick="goToSlide(0)" class="w-2.5 h-2.5 rounded-full bg-blue-500 cursor-pointer" id="dot-0"></span>
+        <span onclick="goToSlide(1)" class="w-2.5 h-2.5 rounded-full bg-slate-700 cursor-pointer" id="dot-1"></span>
+        <span onclick="goToSlide(2)" class="w-2.5 h-2.5 rounded-full bg-slate-700 cursor-pointer" id="dot-2"></span>
+        <span onclick="goToSlide(3)" class="w-2.5 h-2.5 rounded-full bg-slate-700 cursor-pointer" id="dot-3"></span>
+        <span onclick="goToSlide(4)" class="w-2.5 h-2.5 rounded-full bg-slate-700 cursor-pointer" id="dot-4"></span>
+      </div>
+
+      <button onclick="nextSlide()" id="nextBtn" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-blue-900/40">
+        Siguiente <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </footer>
+
+  <!-- ================= LÓGICA JAVASCRIPT ================= -->
+  <script>
+    let currentSlide = 0;
+    const totalSlides = 5;
+    let simChartInstance = null;
+    let reasonsChartInstance = null;
+    let servicesChartInstance = null;
+
+    // Temporizador de 15 minutos (Rúbrica ADEX)
+    let timeLeft = 15 * 60; // 900 segundos
+    let timerInterval = null;
+
+    function toggleTimer() {
+      const btn = document.getElementById('timerControlBtn');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      } else {
+        timerInterval = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = 
+              `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            if (timeLeft <= 120) {
+              document.getElementById('timerDisplay').classList.add('text-red-400');
+            }
+          } else {
+            clearInterval(timerInterval);
+            alert('¡Tiempo límite de 15 minutos alcanzado según rúbrica!');
+          }
+        }, 1000);
+        btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      }
+    }
+
+    function updateSlideUI() {
+      for (let i = 0; i < totalSlides; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        const navBtn = document.getElementById(`nav-btn-${i}`);
+        const dot = document.getElementById(`dot-${i}`);
+
+        if (i === currentSlide) {
+          slide.classList.add('active');
+          if (navBtn) {
+            navBtn.classList.remove('text-slate-400');
+            navBtn.classList.add('bg-blue-600', 'text-white');
+          }
+          dot.classList.remove('bg-slate-700');
+          dot.classList.add('bg-blue-500', 'w-6');
+        } else {
+          slide.classList.remove('active');
+          if (navBtn) {
+            navBtn.classList.remove('bg-blue-600', 'text-white');
+            navBtn.classList.add('text-slate-400');
+          }
+          dot.classList.remove('bg-blue-500', 'w-6');
+          dot.classList.add('bg-slate-700');
+        }
+      }
+
+      const prevBtn = document.getElementById('prevBtn');
+      if (currentSlide === 0) {
+        prevBtn.disabled = true;
+        prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        prevBtn.disabled = false;
+        prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+
+      const nextBtn = document.getElementById('nextBtn');
+      if (currentSlide === totalSlides - 1) {
+        nextBtn.innerHTML = 'Reiniciar <i class="fa-solid fa-rotate-left ml-1"></i>';
+      } else {
+        nextBtn.innerHTML = 'Siguiente <i class="fa-solid fa-chevron-right ml-1"></i>';
+      }
+
+      if (currentSlide === 3) {
+        setTimeout(initSimChart, 50);
+      }
+      if (currentSlide === 4) {
+        setTimeout(initPhase3Charts, 50);
+      }
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateSlideUI();
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlideUI();
+      } else {
+        goToSlide(0);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlideUI();
+      }
+    }
+
+    // Navegación por teclado
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // Pestañas de Prompts
+    function switchPromptTab(tab) {
+      const p1 = document.getElementById('promptContent1');
+      const p2 = document.getElementById('promptContent2');
+      const b1 = document.getElementById('tab-btn-diag');
+      const b2 = document.getElementById('tab-btn-nlp');
+
+      if (tab === 'diagnostico') {
+        p1.classList.remove('hidden');
+        p2.classList.add('hidden');
+        b1.classList.add('bg-indigo-600', 'text-white');
+        b1.classList.remove('text-slate-400');
+        b2.classList.remove('bg-indigo-600', 'text-white');
+        b2.classList.add('text-slate-400');
+      } else {
+        p2.classList.remove('hidden');
+        p1.classList.add('hidden');
+        b2.classList.add('bg-indigo-600', 'text-white');
+        b2.classList.remove('text-slate-400');
+        b1.classList.remove('bg-indigo-600', 'text-white');
+        b1.classList.add('text-slate-400');
+      }
+    }
+
+    function copyCurrentPrompt() {
+      const p1Hidden = document.getElementById('promptContent1').classList.contains('hidden');
+      const textToCopy = p1Hidden 
+        ? document.getElementById('promptContent2').innerText 
+        : document.getElementById('promptContent1').innerText;
+      navigator.clipboard.writeText(textToCopy);
+      alert('¡Prompt copiado al portapapeles con éxito!');
+    }
+
+    // ================= SIMULADOR FINANCIERO =================
+    const sliderTracking = document.getElementById('sliderTracking');
+    const sliderConv = document.getElementById('sliderConv');
+    const sliderTicket = document.getElementById('sliderTicket');
+
+    function calculateSimulation() {
+      const trackingPct = parseFloat(sliderTracking.value) / 100;
+      const convWithTracking = parseFloat(sliderConv.value) / 100;
+      const ticket = parseFloat(sliderTicket.value);
+
+      document.getElementById('sliderTrackingVal').innerText = `${sliderTracking.value}%`;
+      document.getElementById('sliderConvVal').innerText = `${sliderConv.value}%`;
+      document.getElementById('sliderTicketVal').innerText = `US$ ${ticket.toLocaleString()}`;
+
+      const totalCotizaciones = 60;
+      const cotsTracked = totalCotizaciones * trackingPct;
+      const cotsUntracked = totalCotizaciones * (1 - trackingPct);
+
+      const cierresTracked = cotsTracked * convWithTracking;
+      const cierresUntracked = cotsUntracked * 0.07;
+      const totalCierres = Math.round(cierresTracked + cierresUntracked);
+
+      const baseCierres = 12;
+      const baseIngresos = baseCierres * 1500;
+
+      const nuevoIngreso = totalCierres * ticket;
+      const diffIngreso = nuevoIngreso - baseIngresos;
+      const diffCierres = totalCierres - baseCierres;
+
+      document.getElementById('simCierres').innerText = totalCierres;
+      document.getElementById('simDiffCierres').innerText = `${diffCierres >= 0 ? '+' : ''}${diffCierres} embarques vs actual`;
+      document.getElementById('simFacturacion').innerText = `US$ ${nuevoIngreso.toLocaleString()}`;
+      document.getElementById('simDiffIngresos').innerText = `${diffIngreso >= 0 ? '+' : ''}US$ ${diffIngreso.toLocaleString()} / mes`;
+
+      updateSimChart(baseIngresos, nuevoIngreso);
+    }
+
+    function initSimChart() {
+      const ctx = document.getElementById('simChart').getContext('2d');
+      if (simChartInstance) simChartInstance.destroy();
+      simChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Actual (Fuga de Pipeline)', 'Proyección IA / CRM'],
+          datasets: [{
+            label: 'Ingresos Mensuales (US$)',
+            data: [18000, 40500],
+            backgroundColor: [
+              'rgba(239, 68, 68, 0.75)',
+              'rgba(16, 185, 129, 0.85)'
+            ],
+            borderColor: ['#ef4444', '#10b981'],
+            borderWidth: 1.5,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', callback: value => '$' + value.toLocaleString() }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#cbd5e1', font: { weight: 'bold' } }
+            }
+          }
+        }
+      });
+      calculateSimulation();
+    }
+
+    function updateSimChart(base, nuevo) {
+      if (!simChartInstance) return;
+      simChartInstance.data.datasets[0].data = [base, nuevo];
+      simChartInstance.update();
+    }
+
+    sliderTracking.addEventListener('input', calculateSimulation);
+    sliderConv.addEventListener('input', calculateSimulation);
+    sliderTicket.addEventListener('input', calculateSimulation);
+
+    // ================= FASE 3: GRÁFICOS ANALÍTICOS =================
+    function initPhase3Charts() {
+      // Donut Chart: NLP Causa Raíz
+      const ctx1 = document.getElementById('reasonsChart').getContext('2d');
+      if (reasonsChartInstance) reasonsChartInstance.destroy();
+      reasonsChartInstance = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+          labels: [
+            'Silencio / Sin seguimiento (Lead frío)',
+            'Tarifa percibida alta vs mercado',
+            'Eligió a la competencia por inmediatez',
+            'Tiempos de tránsito marítimo',
+            'Canceló orden de importación'
+          ],
+          datasets: [{
+            data: [48, 22, 16, 9, 5],
+            backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#3b82f6', '#64748b'],
+            borderWidth: 2,
+            borderColor: '#0f172a'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 12 }
+            }
+          }
+        }
+      });
+
+      // Bar Chart: Comparativa de Servicios
+      const ctx2 = document.getElementById('servicesChart').getContext('2d');
+      if (servicesChartInstance) servicesChartInstance.destroy();
+      servicesChartInstance = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: ['Marítimo FCL', 'Marítimo LCL', 'Aéreo Express', 'Agenciamiento Aduanas'],
+          datasets: [
+            {
+              label: 'Cierres Actuales (Sin IA)',
+              data: [5, 3, 2, 2],
+              backgroundColor: 'rgba(239, 68, 68, 0.65)',
+              borderRadius: 6
+            },
+            {
+              label: 'Cierres Optimizados con IA/NLP',
+              data: [11, 8, 4, 6],
+              backgroundColor: 'rgba(59, 130, 246, 0.85)',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#cbd5e1', font: { size: 11 } }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', stepSize: 2 }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#cbd5e1', font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    updateSlideUI();
+  </script>
+</body>
+</html>
